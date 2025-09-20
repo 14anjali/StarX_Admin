@@ -45,6 +45,7 @@
   },
   "plugins": ["prettier", "react", "react-hooks"],
   "rules": {
+
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
     "react/react-in-jsx-scope": "off",
@@ -82,17 +83,18 @@
         "ignoreRestSiblings": false
       }
     ],
-    "prettier/prettier": [
-      "warn",
-      {
-        "bracketSpacing": true,
-        "printWidth": 140,
-        "singleQuote": true,
-        "trailingComma": "none",
-        "tabWidth": 2,
-        "useTabs": false,
-        "endOfLine": "auto"
-      }
-    ]
+    // "prettier/prettier": [
+    //   "warn",
+    //   {
+    //     "bracketSpacing": true,
+    //     "printWidth": 140,
+    //     "singleQuote": true,
+    //     "trailingComma": "none",
+    //     "tabWidth": 2,
+    //     "useTabs": false,
+    //     "endOfLine": "auto"
+    //   }
+    // ]
+    "prettier/prettier": "off"
   }
 }

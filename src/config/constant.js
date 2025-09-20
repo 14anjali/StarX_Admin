@@ -1,5 +1,5 @@
 export const BASE_URL = '/app/dashboard/analytics';
-export const BASE_TITLE = ' | Gradient Able Premium React + Admin Template';
+export const BASE_TITLE = 'StarX Admin Panlel';
 
 export const CONFIG = {
   layout: 'vertical',
