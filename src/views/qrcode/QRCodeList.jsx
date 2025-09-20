@@ -1,12 +1,11 @@
 import { Container, Row, Col, Button, Modal, Form, Spinner, Card } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 
 const QRCodeList = () => {
   const [amount, setAmount] = useState('');
   const [totalQr, setTotalQr] = useState('');
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -15,9 +14,8 @@ const QRCodeList = () => {
 
   const navigate = useNavigate();
 
-  // Fetch QR Codes
-
-  const fetchQr = async () => {
+  // Fetch QR Codes - memoized with useCallback
+  const fetchQr = useCallback(async () => {
     const token = Cookies.get('token');
     if (!token) {
       navigate('/auth/signin-1', { replace: true });
@@ -27,13 +25,15 @@ const QRCodeList = () => {
     try {
       const response = await fetch('https://starx-backend.onrender.com/api/qrcode/all', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       });
+
       if (response.status === 401) {
         Cookies.remove('token');
         navigate('/auth/signin-1', { replace: true });
         return;
       }
+
       const data = await response.json();
       if (response.ok) setQrData(data);
       else setError(data.message || 'Failed to fetch QR codes');
@@ -42,12 +42,11 @@ const QRCodeList = () => {
     } finally {
       setLoading(false);
     }
-  };
-  // eslint-disable-next-line
+  }, [navigate]);
+
   useEffect(() => {
     fetchQr();
-
-  }, [navigate, fetchQr]);
+  }, [fetchQr]);
 
   // Process QR Data into cards
   const processQrData = () => {
@@ -67,7 +66,6 @@ const QRCodeList = () => {
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => {
     setShowModal(false);
-    // setSelectedProduct('');
     setAmount('');
     setTotalQr('');
   };
@@ -85,12 +83,11 @@ const QRCodeList = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
-      // Log the raw response for debugging
       const responseText = await response.text();
       console.log('Raw response:', responseText);
 
@@ -105,13 +102,11 @@ const QRCodeList = () => {
       console.log('Parsed data:', data);
 
       if (!response.ok) {
-        // Handle non-200 status codes
         throw new Error(data?.message || `Server error: ${response.status}`);
       }
 
-      // Success case
       handleCloseModal();
-      fetchQr();
+      fetchQr(); // Refresh QR codes
       alert('QR codes created successfully!');
     } catch (err) {
       console.error('Error details:', err);
